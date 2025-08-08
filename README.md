@@ -1,98 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Calmato Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 기반의 Calmato 백엔드 API 서버입니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## ✨ 주요 기능
 
-## Description
+- 🔗 **Swagger API 문서**: `/api` 엔드포인트에서 API 문서 확인
+- 🐳 **Docker 지원**: 컨테이너 기반 배포
+- 🚀 **GitHub Actions CI/CD**: 자동 배포 파이프라인
+- 🔒 **JWT 인증**: 보안 토큰 기반 인증
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 요구사항
 
-## Project setup
+- Node.js 18 이상
+- npm 또는 yarn
+- Docker (배포용)
+
+## 🛠️ 로컬 개발 설정
 
 ```bash
-$ npm install
+# 의존성 설치
+npm install
+
+# 환경변수 설정
+cp env.example .env
+# .env 파일을 편집하여 필요한 환경변수 설정
+
+# 개발 서버 실행
+npm run start:dev
+
+# Swagger API 문서 확인
+# http://localhost:3000/api
 ```
 
-## Compile and run the project
+## 🧪 테스트
 
 ```bash
-# development
-$ npm run start
+# 단위 테스트
+npm run test
 
-# watch mode
-$ npm run start:dev
+# E2E 테스트
+npm run test:e2e
 
-# production mode
-$ npm run start:prod
+# 테스트 커버리지
+npm run test:cov
 ```
 
-## Run tests
+## 🐳 Docker를 사용한 로컬 실행
 
 ```bash
-# unit tests
-$ npm run test
+# Docker 이미지 빌드
+npm run docker:build
 
-# e2e tests
-$ npm run test:e2e
+# 컨테이너 실행
+npm run docker:up
 
-# test coverage
-$ npm run test:cov
+# 로그 확인
+npm run docker:logs
+
+# 컨테이너 중지
+npm run docker:down
 ```
 
-## Deployment
+## 🚀 EC2 배포
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 1. EC2 서버 초기 설정
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# EC2 서버에서 실행
+sudo bash scripts/setup-ec2.sh
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. GitHub Secrets 설정
 
-## Resources
+Repository Settings > Secrets and variables > Actions에서 다음 secrets 추가:
 
-Check out a few resources that may come in handy when working with NestJS:
+- `EC2_HOST`: EC2 서버의 퍼블릭 IP
+- `EC2_USERNAME`: SSH 사용자명 (보통 ubuntu)
+- `EC2_PRIVATE_KEY`: SSH 개인키
+- `JWT_SECRET`: JWT 서명용 비밀키
+- `CORS_ORIGIN`: 허용할 도메인 (예: https://yourdomain.com)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 3. 자동 배포
 
-## Support
+- `main` 브랜치에 push하면 자동으로 EC2 서버에 배포됩니다
+- GitHub Actions에서 배포 진행상황을 확인할 수 있습니다
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 📊 API 문서
 
-## Stay in touch
+서버 실행 후 다음 URL에서 Swagger API 문서를 확인할 수 있습니다:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- **로컬**: http://localhost:3000/api
+- **프로덕션**: http://YOUR_EC2_IP:3000/api
 
-## License
+## 🛠️ 개발 스크립트
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+# 개발 서버 (Hot reload)
+npm run start:dev
+
+# 프로덕션 빌드
+npm run build
+
+# 프로덕션 서버 실행
+npm run start:prod
+
+# 코드 포맷팅
+npm run format
+
+# 린팅
+npm run lint
+
+# Docker 명령어
+npm run docker:build    # 이미지 빌드
+npm run docker:run      # 컨테이너 실행
+npm run docker:up       # 컴포즈 실행
+npm run docker:down     # 컴포즈 중지
+npm run docker:logs     # 로그 확인
+```
+
+## 📁 프로젝트 구조
+
+```
+src/
+├── auth/           # 인증 모듈
+├── config/         # 설정 파일들
+├── domain/         # 도메인 모듈들
+│   ├── playlist/   # 플레이리스트 관련
+│   ├── post/       # 게시글 관련
+│   └── user/       # 사용자 관련
+├── middlewares/    # 미들웨어들
+└── utils/          # 유틸리티 함수들
+```
+
+## 🔧 환경변수
+
+`env.example` 파일을 참고하여 `.env` 파일을 생성하세요:
+
+```env
+NODE_ENV=production
+PORT=3000
+JWT_SECRET=your-secret-key
+CORS_ORIGIN=https://yourdomain.com
+```
