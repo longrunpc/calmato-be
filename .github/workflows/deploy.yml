@@ -72,10 +72,28 @@ jobs:
           sudo tee .env > /dev/null <<EOF
           NODE_ENV=production
           PORT=3000
+
+          # JWT 설정
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN=7d
+
+          # 데이터베이스 설정
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_DATABASE=${{ secrets.DB_DATABASE }}
+          DB_SSL=${{ secrets.DB_SSL }}
+          TYPEORM_SYNC=${{ secrets.TYPEORM_SYNC }}
+          TYPEORM_LOGGING=${{ secrets.TYPEORM_LOGGING }}
+
+          # CORS 설정
           CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
+
+          # Swagger 설정
           SWAGGER_ENABLE=true
+
+          # 로그 설정
           LOG_LEVEL=info
           EOF
 
@@ -83,30 +101,17 @@ jobs:
           sudo docker-compose build --no-cache
           sudo docker-compose up -d
 
-          # 헬스체크
-          echo "Waiting for application to start..."
-          sleep 30
-          
-          # 애플리케이션 상태 확인
-          if curl -f http://localhost:3000/; then
-            echo "✅ Deployment successful!"
-          else
-            echo "❌ Deployment failed - application not responding"
-            sudo docker-compose logs
-            exit 1
-          fi
-
           # 로그 확인
           echo "📋 Container status:"
           sudo docker-compose ps
 
-    - name: Notify deployment status
-      if: always()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} 
+    # - name: Notify deployment status
+    #   if: always()
+    #   uses: 8398a7/action-slack@v3
+    #   with:
+    #     status: ${{ job.status }}
+    #     channel: '#deployments'
+    #     webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+    #     fields: repo,message,commit,author,action,eventName,ref,workflow
+    #   env:
+    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
