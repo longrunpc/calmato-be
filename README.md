@@ -7,7 +7,11 @@ NestJS 기반의 Calmato 백엔드 API 서버입니다.
 - 🔗 **Swagger API 문서**: `/api` 엔드포인트에서 API 문서 확인
 - 🐳 **Docker 지원**: 컨테이너 기반 배포
 - 🚀 **GitHub Actions CI/CD**: 자동 배포 파이프라인
-- 🔒 **JWT 인증**: 보안 토큰 기반 인증
+- 🔒 **JWT 인증**: 보안 토큰 기반 인증 시스템
+- 👤 **사용자 관리**: 회원가입, 로그인, 프로필 조회
+- 🛡️ **보안**: bcrypt 비밀번호 해싱, JWT 토큰 인증
+- ✅ **입력 검증**: class-validator를 통한 데이터 유효성 검사
+- 🌐 **CORS 지원**: 크로스 오리진 요청 처리
 
 ## 📋 요구사항
 
@@ -31,6 +35,48 @@ npm run start:dev
 # Swagger API 문서 확인
 # http://localhost:3000/api
 ```
+
+## 🔐 인증 API 사용법
+
+### 1. 회원가입
+```bash
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "username": "testuser",
+    "name": "테스트 사용자",
+    "password": "password123"
+  }'
+```
+
+### 2. 로그인
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "password123"
+  }'
+```
+
+### 3. 프로필 조회 (JWT 토큰 필요)
+```bash
+curl -X GET http://localhost:3000/auth/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### 4. 기본 테스트 계정
+- **이메일**: test@example.com
+- **비밀번호**: password123
+
+### 5. Swagger UI에서 테스트
+1. http://localhost:3000/api 접속
+2. `/auth/login`으로 로그인
+3. 응답에서 받은 `accessToken` 복사
+4. 우측 상단 🔒 **Authorize** 버튼 클릭
+5. `Bearer YOUR_TOKEN` 형식으로 입력
+6. 인증이 필요한 API 테스트 가능
 
 ## 🧪 테스트
 
