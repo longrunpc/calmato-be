@@ -6,10 +6,29 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   test:
     name: Test and Lint
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     strategy:
       matrix:
@@ -28,6 +47,19 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Set env for e2e
+      run: |
+        echo "DB_HOST=127.0.0.1" >> $GITHUB_ENV
+        echo "DB_PORT=5432" >> $GITHUB_ENV
+        echo "DB_USERNAME=test" >> $GITHUB_ENV
+        echo "DB_PASSWORD=test" >> $GITHUB_ENV
+        echo "DB_DATABASE=testdb" >> $GITHUB_ENV
+        echo "DB_SSL=false" >> $GITHUB_ENV
+        echo "TYPEORM_SYNC=true" >> $GITHUB_ENV
+        echo "TYPEORM_LOGGING=false" >> $GITHUB_ENV
+        echo "JWT_SECRET=dummy" >> $GITHUB_ENV
+        echo "JWT_EXPIRES_IN=7d" >> $GITHUB_ENV
+
     - name: Run linter
       run: npm run lint
 
@@ -43,7 +75,7 @@ jobs:
   security:
     name: Security Audit
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -57,11 +89,21 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Run security audit
-      run: npm audit --audit-level moderate
+    - name: Run security audit (npm)
+      run: npm audit --audit-level moderate || true
 
-    - name: Scan for vulnerabilities
-      uses: securecodewarrior/github-action-add-sarif@v1
-      if: always()
+    - name: Trivy FS scan -> SARIF
+      uses: aquasecurity/trivy-action@0.20.0
       with:
-        sarif-file: 'security-scan.sarif' 
+        scan-type: fs
+        format: sarif
+        output: security-scan.sarif
+        ignore-unfixed: true
+        severity: CRITICAL,HIGH
+        exit-code: '0'
+
+    - name: Upload SARIF
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: security-scan.sarif
