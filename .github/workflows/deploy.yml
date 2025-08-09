@@ -58,7 +58,7 @@ jobs:
           cd /opt/calmato
 
           # 기존 컨테이너 중지 및 제거
-          sudo docker-compose down || true
+          sudo docker compose down || true
 
           # GitHub에서 최신 코드 가져오기
           if [ -d ".git" ]; then

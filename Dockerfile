@@ -1,39 +1,39 @@
-# Node.js 18 Alpine 이미지 사용 (경량화)
-FROM node:18-alpine AS builder
+# Node.js 23 버전을 사용하여 모든 의존성을 설치하고 빌드합니다.
+FROM node:23-alpine AS builder
 
-# 작업 디렉토리 설정
+# 작업 디렉토리를 설정합니다.
 WORKDIR /app
 
-# package.json과 package-lock.json 복사
+# package.json 파일들을 복사합니다.
 COPY package*.json ./
 
-# 의존성 설치
-RUN npm ci --only=production && npm cache clean --force
+# 모든 의존성(개발 및 운영)을 설치합니다.
+RUN npm ci
 
-# 소스 코드 복사
+# 소스 코드를 복사합니다.
 COPY . .
 
-# 애플리케이션 빌드
+# NestJS 애플리케이션을 빌드합니다.
 RUN npm run build
 
-# 프로덕션 이미지
-FROM node:18-alpine AS production
+# -- Production Stage --
+# 더 가벼운 Node.js 런타임 이미지를 사용합니다.
+FROM node:23-alpine AS production
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 빌드된 애플리케이션과 node_modules 복사
+# builder 스테이지에서 빌드된 결과물(dist 폴더)만 복사합니다.
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
+
+# 프로덕션에 필요한 package.json 파일만 복사합니다.
+COPY package*.json ./
+
+# 운영에 필요한 의존성만 다시 설치하여 이미지 크기를 줄입니다.
+RUN npm ci --only=production
 
 # 애플리케이션 포트 노출
 EXPOSE 3000
 
-# 헬스체크 추가 (curl 설치 필요)
-RUN apk add --no-cache curl
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/ || exit 1
-
 # 애플리케이션 실행
-CMD ["node", "dist/main"] 
+CMD ["node", "dist/main"]
