@@ -11,11 +11,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'default-secret-key',
-      signOptions: {
-        expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-      },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET,
+        signOptions: {
+          expiresIn: process.env.JWT_EXPIRES_IN,
+        },
+      }),
     }),
     TypeOrmModule.forFeature([User]),
   ],

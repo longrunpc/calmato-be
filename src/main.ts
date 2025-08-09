@@ -56,9 +56,9 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
   console.log(
-    `🚀 애플리케이션이 포트 ${process.env.PORT ?? 3000}에서 실행 중입니다.`,
+    `애플리케이션이 포트 ${process.env.PORT ?? 3000}에서 실행 중입니다.`,
   );
-  console.log(`📖 API 문서: http://localhost:${process.env.PORT ?? 3000}/api`);
+  console.log(`API 문서: http://localhost:${process.env.PORT ?? 3000}/api`);
 }
 
 void bootstrap();
