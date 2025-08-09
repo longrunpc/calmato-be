@@ -97,12 +97,12 @@ jobs:
           EOF
 
           # Docker 이미지 빌드 및 컨테이너 시작
-          sudo docker-compose build --no-cache
-          sudo docker-compose up -d
+          sudo docker compose build --no-cache
+          sudo docker compose up -d
 
           # 로그 확인
           echo "Container status:"
-          sudo docker-compose ps
+          sudo docker compose ps
 
     # - name: Notify deployment status
     #   if: always()
