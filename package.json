@@ -28,7 +28,9 @@
     "docker:run": "docker run -p 3000:3000 --env-file .env calmato-backend",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f"
+    "docker:logs": "docker-compose logs -f",
+    "commit": "./scripts/ai-commit.sh",
+    "pr": "./scripts/ai-pr.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.864.0",

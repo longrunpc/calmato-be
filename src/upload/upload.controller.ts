@@ -1,8 +1,8 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Post,
-  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -41,28 +41,56 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: '파일 업로드를 위한 multipart/form-data',
     schema: {
       type: 'object',
       properties: {
         file: {
           type: 'string',
           format: 'binary',
+          description: '업로드할 파일 (이미지 파일)',
         },
         type: {
           type: 'string',
           enum: ['asmrImage', 'playlistImage', 'profileImage'],
+          description:
+            '파일 타입 (asmrImage: ASMR 이미지, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지)',
+          example: 'asmrImage',
         },
       },
+      required: ['file', 'type'],
     },
   })
   @ApiOperation({
     summary: '파일 업로드',
-    description: '파일을 S3에 업로드합니다.',
+    description: `파일을 S3에 업로드합니다.
+
+**지원하는 파일 타입:**
+- \`asmrImage\`: ASMR 관련 이미지
+- \`playlistImage\`: 플레이리스트 썸네일 이미지
+- \`profileImage\`: 사용자 프로필 이미지
+
+**업로드 경로:** \`{type}/{userId}/{uuid}.{extension}\``,
   })
   @ApiResponse({
     status: 200,
     description: '파일 업로드 성공',
-    type: String,
+    schema: {
+      type: 'object',
+      properties: {
+        key: {
+          type: 'string',
+          description: 'S3에 저장된 파일의 키',
+          example: 'asmrImage/123/550e8400-e29b-41d4-a716-446655440000.jpg',
+        },
+        url: {
+          type: 'string',
+          description: '업로드된 파일의 공개 URL',
+          example:
+            'https://your-bucket.s3.ap-northeast-2.amazonaws.com/asmrImage/123/550e8400-e29b-41d4-a716-446655440000.jpg',
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 400,
@@ -74,7 +102,7 @@ export class UploadController {
   })
   async uploadFile(
     @CurrentUser() user: User,
-    @Query('type') type: string,
+    @Body('type') type: string,
     @UploadedFile() file: UploadedFileType,
   ) {
     if (!file) {
