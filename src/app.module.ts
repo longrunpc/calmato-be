@@ -7,6 +7,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { createTypeOrmOptions } from './config/database/typeorm.config';
+import { UploadModule } from './upload/upload.module';
+import { PlaylistModule } from './domain/playlist/playlist.module';
+import { AsmrModule } from './domain/asmr/asmr.module';
 
 @Module({
   imports: [
@@ -15,6 +18,9 @@ import { createTypeOrmOptions } from './config/database/typeorm.config';
       useFactory: () => createTypeOrmOptions(),
     }),
     AuthModule,
+    UploadModule,
+    PlaylistModule,
+    AsmrModule,
   ],
   controllers: [AppController],
   providers: [
