@@ -9,7 +9,6 @@ import {
   Unique,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { Post } from './post.entity';
 
 @Entity('post_likes')
 @Unique(['postId', 'userId']) // 한 사용자가 같은 게시글에 중복 좋아요 방지
@@ -31,9 +30,9 @@ export class PostLike {
   createdAt: Date;
 
   // 연관관계
-  @ManyToOne(() => Post, post => post.postLikes)
+  @ManyToOne('Post', 'postLikes')
   @JoinColumn({ name: 'postId' })
-  post: Post;
+  post: any;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })

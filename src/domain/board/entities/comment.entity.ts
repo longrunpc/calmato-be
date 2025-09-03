@@ -10,7 +10,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { Post } from './post.entity';
 
 @Entity('comments')
 export class Comment {
@@ -59,18 +58,18 @@ export class Comment {
   updatedAt: Date;
 
   // 연관관계
-  @ManyToOne(() => Post, post => post.comments)
+  @ManyToOne('Post', 'comments')
   @JoinColumn({ name: 'postId' })
-  post: Post;
+  post: any;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => Comment, { nullable: true })
+  @ManyToOne('Comment', { nullable: true })
   @JoinColumn({ name: 'parentCommentId' })
-  parentComment?: Comment;
+  parentComment?: any;
 
-  @OneToMany(() => Comment, comment => comment.parentComment)
-  replies: Comment[];
+  @OneToMany('Comment', 'parentComment')
+  replies: any[];
 }
