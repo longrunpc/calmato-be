@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Post,
   UploadedFile,
   UseGuards,
@@ -52,9 +53,9 @@ export class UploadController {
         },
         type: {
           type: 'string',
-          enum: ['asmrImage', 'asmrMusic', 'playlistImage', 'profileImage'],
+          enum: ['asmrImage', 'playlistImage', 'profileImage'],
           description:
-            '파일 타입 (asmrImage: ASMR 이미지, asmrMusic: ASMR 음악 파일, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지)',
+            '파일 타입 (asmrImage: ASMR 이미지, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지)',
           example: 'asmrImage',
         },
       },
@@ -62,12 +63,11 @@ export class UploadController {
     },
   })
   @ApiOperation({
-    summary: '파일 업로드',
+    summary: 'S3에 이미지 업로드',
     description: `파일을 S3에 업로드합니다.
 
 **지원하는 파일 타입:**
 - \`asmrImage\`: ASMR 관련 이미지
-- \`asmrMusic\`: ASMR 음악 파일
 - \`playlistImage\`: 플레이리스트 썸네일 이미지
 - \`profileImage\`: 사용자 프로필 이미지
 
@@ -115,5 +115,104 @@ export class UploadController {
 
     const result = await this.s3Service.uploadFile(file, key);
     return result;
+  }
+
+  @Delete('file')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiBody({
+    description: '삭제할 파일의 URL',
+    schema: {
+      type: 'object',
+      properties: {
+        url: {
+          type: 'string',
+          description: 'S3 파일의 전체 URL',
+          example:
+            'https://your-bucket.s3.ap-northeast-2.amazonaws.com/asmrImage/123/550e8400-e29b-41d4-a716-446655440000.jpg',
+        },
+      },
+      required: ['url'],
+    },
+  })
+  @ApiOperation({
+    summary: 'S3에서 파일 삭제',
+    description: `S3에서 파일을 삭제합니다.
+
+**사용 방법:**
+- \`url\`: S3 파일의 전체 URL을 제공하면 자동으로 키를 추출하여 삭제합니다.
+
+**지원하는 URL 형식:**
+- https://bucket.s3.region.amazonaws.com/key
+- https://s3.region.amazonaws.com/bucket/key`,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '파일 삭제 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          description: '삭제 완료 메시지',
+          example: '파일이 성공적으로 삭제되었습니다.',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'URL이 필요합니다',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증되지 않은 사용자',
+  })
+  async deleteFile(@Body() body: { url: string }) {
+    const { url } = body;
+
+    if (!url) {
+      throw new BadRequestException('URL이 필요합니다');
+    }
+
+    const fileKey = this.extractKeyFromUrl(url);
+    if (!fileKey) {
+      throw new BadRequestException('유효하지 않은 URL 형식입니다');
+    }
+
+    await this.s3Service.deleteFile(fileKey);
+    return {
+      message: '파일이 성공적으로 삭제되었습니다.',
+    };
+  }
+
+  private extractKeyFromUrl(url: string): string | null {
+    try {
+      // S3 URL 패턴들을 지원
+      // 1. https://bucket.s3.region.amazonaws.com/key
+      // 2. https://s3.region.amazonaws.com/bucket/key
+
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+
+      // bucket.s3.region.amazonaws.com 형태
+      if (urlObj.hostname.includes('.s3.')) {
+        // 첫 번째 '/' 제거하고 반환
+        return pathname.substring(1);
+      }
+
+      // s3.region.amazonaws.com/bucket 형태
+      if (urlObj.hostname.includes('s3.') && pathname.includes('/')) {
+        const pathParts = pathname.substring(1).split('/');
+        if (pathParts.length > 1) {
+          // bucket 부분 제거하고 나머지 경로 반환
+          return pathParts.slice(1).join('/');
+        }
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
   }
 }

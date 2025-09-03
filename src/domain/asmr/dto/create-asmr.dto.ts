@@ -13,7 +13,7 @@ export class CreateAsmrDto {
   @ApiProperty({
     description: 'ASMR 이미지 URL',
     example: 'https://example.com/images/asmr-image.jpg',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -22,7 +22,7 @@ export class CreateAsmrDto {
   @ApiProperty({
     description: 'YouTube URL',
     example: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -31,7 +31,7 @@ export class CreateAsmrDto {
   @ApiProperty({
     description: '음악 파일 URL',
     example: 'https://example.com/music/rain-sound.mp3',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
