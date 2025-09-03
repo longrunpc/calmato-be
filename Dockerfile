@@ -1,5 +1,5 @@
 # Node.js 23 버전을 사용하여 모든 의존성을 설치하고 빌드합니다.
-FROM node:23-alpine AS builder
+FROM node:24-alpine AS builder
 
 # 작업 디렉토리를 설정합니다.
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm run build
 
 # -- Production Stage --
 # 더 가벼운 Node.js 런타임 이미지를 사용합니다.
-FROM node:23-alpine AS production
+FROM node:24-alpine AS production
 
 # 작업 디렉토리 설정
 WORKDIR /app
