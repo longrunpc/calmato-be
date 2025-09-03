@@ -79,11 +79,6 @@ export class UploadController {
     schema: {
       type: 'object',
       properties: {
-        key: {
-          type: 'string',
-          description: 'S3에 저장된 파일의 키',
-          example: 'asmrImage/123/550e8400-e29b-41d4-a716-446655440000.jpg',
-        },
         url: {
           type: 'string',
           description: '업로드된 파일의 공개 URL',
@@ -114,7 +109,103 @@ export class UploadController {
     const key = `${type}/${user.id}/${uuidv4()}.${fileExtension}`;
 
     const result = await this.s3Service.uploadFile(file, key);
-    return result;
+    return { url: result.url };
+  }
+
+  @Post('music')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '음악 파일 업로드를 위한 multipart/form-data',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: '업로드할 음악 파일 (mp3, wav, m4a, flac 등)',
+        },
+      },
+      required: ['file'],
+    },
+  })
+  @ApiOperation({
+    summary: 'S3에 음악 파일 업로드',
+    description: `음악 파일을 S3에 업로드합니다.
+
+**지원하는 파일 형식:**
+- MP3 (.mp3)
+- WAV (.wav)
+- M4A (.m4a)
+- FLAC (.flac)
+- AAC (.aac)
+
+**업로드 경로:** \`music/{userId}/{uuid}.{extension}\``,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '음악 파일 업로드 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        url: {
+          type: 'string',
+          description: '업로드된 파일의 공개 URL',
+          example:
+            'https://your-bucket.s3.ap-northeast-2.amazonaws.com/music/123/550e8400-e29b-41d4-a716-446655440000.mp3',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: '파일이 필요하거나 지원하지 않는 파일 형식입니다',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증되지 않은 사용자',
+  })
+  async uploadMusic(
+    @CurrentUser() user: User,
+    @UploadedFile() file: UploadedFileType,
+  ) {
+    if (!file) {
+      throw new BadRequestException('음악 파일이 필요합니다');
+    }
+
+    // 음악 파일 형식 검증
+    const allowedMimeTypes = [
+      'audio/mpeg', // mp3
+      'audio/wav', // wav
+      'audio/x-wav', // wav (alternative)
+      'audio/mp4', // m4a
+      'audio/x-m4a', // m4a (alternative)
+      'audio/flac', // flac
+      'audio/x-flac', // flac (alternative)
+      'audio/aac', // aac
+    ];
+
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        '지원하지 않는 파일 형식입니다. MP3, WAV, M4A, FLAC, AAC 파일만 업로드 가능합니다.',
+      );
+    }
+
+    const fileExtension = file.originalname.split('.').pop()?.toLowerCase();
+    const allowedExtensions = ['mp3', 'wav', 'm4a', 'flac', 'aac'];
+
+    if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+      throw new BadRequestException(
+        '지원하지 않는 파일 확장자입니다. .mp3, .wav, .m4a, .flac, .aac 파일만 업로드 가능합니다.',
+      );
+    }
+
+    const key = `music/${user.id}/${uuidv4()}.${fileExtension}`;
+
+    const result = await this.s3Service.uploadFile(file, key);
+    return { url: result.url };
   }
 
   @Delete('file')
