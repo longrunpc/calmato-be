@@ -53,9 +53,15 @@ export class UploadController {
         },
         type: {
           type: 'string',
-          enum: ['asmrImage', 'playlistImage', 'profileImage'],
+          enum: [
+            'asmrImage',
+            'playlistImage',
+            'profileImage',
+            'freePostImage',
+            'requestPostImage',
+          ],
           description:
-            '파일 타입 (asmrImage: ASMR 이미지, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지)',
+            '파일 타입 (asmrImage: ASMR 이미지, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지, freePostImage: 자유게시판 이미지, requestPostImage: 곡신청게시판 이미지)',
           example: 'asmrImage',
         },
       },
@@ -70,6 +76,8 @@ export class UploadController {
 - \`asmrImage\`: ASMR 관련 이미지
 - \`playlistImage\`: 플레이리스트 썸네일 이미지
 - \`profileImage\`: 사용자 프로필 이미지
+- \`freePostImage\`: 자유게시판 첨부 이미지
+- \`requestPostImage\`: 곡신청게시판 첨부 이미지
 
 **업로드 경로:** \`{type}/{userId}/{uuid}.{extension}\``,
   })

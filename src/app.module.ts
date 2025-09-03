@@ -10,6 +10,7 @@ import { createTypeOrmOptions } from './config/database/typeorm.config';
 import { UploadModule } from './upload/upload.module';
 import { PlaylistModule } from './domain/playlist/playlist.module';
 import { AsmrModule } from './domain/asmr/asmr.module';
+import { BoardModule } from './domain/board/board.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AsmrModule } from './domain/asmr/asmr.module';
     UploadModule,
     PlaylistModule,
     AsmrModule,
+    BoardModule,
   ],
   controllers: [AppController],
   providers: [
