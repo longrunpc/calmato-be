@@ -19,9 +19,9 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 import { S3Service } from '../common/services/s3.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { User } from 'src/domain/user/entities/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { User } from '../domain/user/entities/user.entity';
 
 interface UploadedFileType {
   buffer: Buffer;
