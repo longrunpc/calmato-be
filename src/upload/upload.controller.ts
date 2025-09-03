@@ -211,7 +211,7 @@ export class UploadController {
       }
 
       return null;
-    } catch (error) {
+    } catch {
       return null;
     }
   }
