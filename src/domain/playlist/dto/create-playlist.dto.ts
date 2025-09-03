@@ -6,10 +6,10 @@ export class CreatePlaylistDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ 
-    description: '플레이리스트 이미지 URL', 
+  @ApiProperty({
+    description: '플레이리스트 이미지 URL',
     example: 'https://example.com/playlist/123.jpg',
-    required: false 
+    required: false
   })
   @IsOptional()
   @IsString()

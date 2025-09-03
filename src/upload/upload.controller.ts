@@ -52,9 +52,9 @@ export class UploadController {
         },
         type: {
           type: 'string',
-          enum: ['asmrImage', 'playlistImage', 'profileImage'],
+          enum: ['asmrImage', 'asmrMusic', 'playlistImage', 'profileImage'],
           description:
-            '파일 타입 (asmrImage: ASMR 이미지, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지)',
+            '파일 타입 (asmrImage: ASMR 이미지, asmrMusic: ASMR 음악 파일, playlistImage: 플레이리스트 썸네일, profileImage: 프로필 이미지)',
           example: 'asmrImage',
         },
       },
@@ -67,6 +67,7 @@ export class UploadController {
 
 **지원하는 파일 타입:**
 - \`asmrImage\`: ASMR 관련 이미지
+- \`asmrMusic\`: ASMR 음악 파일
 - \`playlistImage\`: 플레이리스트 썸네일 이미지
 - \`profileImage\`: 사용자 프로필 이미지
 

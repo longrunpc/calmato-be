@@ -10,28 +10,28 @@ export class CreateAsmrDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ 
-    description: 'ASMR 이미지 URL', 
+  @ApiProperty({
+    description: 'ASMR 이미지 URL',
     example: 'https://example.com/images/asmr-image.jpg',
-    required: false 
+    required: false
   })
   @IsOptional()
   @IsString()
   imageUrl?: string;
 
-  @ApiProperty({ 
-    description: 'YouTube URL', 
+  @ApiProperty({
+    description: 'YouTube URL',
     example: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    required: false 
+    required: false
   })
   @IsOptional()
   @IsString()
   youtubeUrl?: string;
 
-  @ApiProperty({ 
-    description: '음악 파일 URL', 
+  @ApiProperty({
+    description: '음악 파일 URL',
     example: 'https://example.com/music/rain-sound.mp3',
-    required: false 
+    required: false
   })
   @IsOptional()
   @IsString()

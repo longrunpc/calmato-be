@@ -33,17 +33,26 @@ export class PlaylistService {
     });
 
     if (!playlist) {
-      throw new NotFoundException(`ID ${id}인 플레이리스트를 찾을 수 없습니다.`);
+      throw new NotFoundException(
+        `ID ${id}인 플레이리스트를 찾을 수 없습니다.`,
+      );
     }
 
     return playlist;
   }
 
-  async update(id: number, updatePlaylistDto: UpdatePlaylistDto): Promise<Playlist> {
+  async update(
+    id: number,
+    updatePlaylistDto: UpdatePlaylistDto,
+  ): Promise<Playlist> {
     const playlist = await this.findOne(id);
-    
+
     // 기존 이미지 URL이 있고 새로운 이미지 URL이 다르면 기존 이미지 삭제
-    if (playlist.imgUrl && updatePlaylistDto.imgUrl && playlist.imgUrl !== updatePlaylistDto.imgUrl) {
+    if (
+      playlist.imgUrl &&
+      updatePlaylistDto.imgUrl &&
+      playlist.imgUrl !== updatePlaylistDto.imgUrl
+    ) {
       await this.deleteImageFromS3(playlist.imgUrl);
     }
 
@@ -53,7 +62,7 @@ export class PlaylistService {
 
   async remove(id: number): Promise<void> {
     const playlist = await this.findOne(id);
-    
+
     // S3에서 이미지 삭제
     if (playlist.imgUrl) {
       await this.deleteImageFromS3(playlist.imgUrl);
